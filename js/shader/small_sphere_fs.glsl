@@ -1,14 +1,16 @@
-float PI = 3.141592653589793238;
+uniform samplerCube u_cube;
 
-uniform float time;
-uniform float progress;
-uniform sampler2D texture1;
-uniform vec4 resolution;
-
-varying vec2 vUv;
-varying vec3 vPosition;
+varying vec3 vReflect;
+varying vec3 vRefract[3];
+varying float vReflectionFactor;
 
 void main()	{
-	// vec2 newUV = (vUv - vec2(0.5))*resolution.zw + vec2(0.5);
-	gl_FragColor = vec4(vUv,0.0,1.);
+	vec4 reflectedColor = textureCube( u_cube, vec3( -vReflect.x, vReflect.yz ) );
+	vec4 refractedColor = vec4( 1.0 );
+
+	refractedColor.r = textureCube( u_cube, vec3( -vRefract[0].x, vRefract[0].yz ) ).r;
+	refractedColor.g = textureCube( u_cube, vec3( -vRefract[1].x, vRefract[1].yz ) ).g;
+	refractedColor.b = textureCube( u_cube, vec3( -vRefract[2].x, vRefract[2].yz ) ).b;
+
+	gl_FragColor = mix( refractedColor, reflectedColor, clamp( vReflectionFactor, 0.0, 1.0 ));
 }

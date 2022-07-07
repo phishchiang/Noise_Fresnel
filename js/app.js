@@ -131,6 +131,11 @@ export default class Sketch {
         time: { value: 0 },
         progress: { value: 0.6 },
         resolution: { value: new THREE.Vector4() },
+        u_refraction_ratio: { value: 1.02 },
+        u_fresnel_bias: { value: 0.1 },
+        u_fresnel_power: { value: 2.0 },
+        u_fresnel_scale: { value: 1.0 },
+        u_cube: { value: null }
       },
       // wireframe: true,
       // transparent: true,
