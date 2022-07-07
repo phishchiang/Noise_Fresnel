@@ -3,8 +3,10 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
-import fragment from "./shader/fragment.glsl";
-import vertex from "./shader/vertex.glsl";
+import big_sphere_fs from "./shader/big_sphere_fs.glsl";
+import big_sphere_vs from "./shader/big_sphere_vs.glsl";
+import small_sphere_fs from "./shader/small_sphere_fs.glsl";
+import small_sphere_vs from "./shader/small_sphere_vs.glsl";
 import * as dat from "dat.gui";
 import gsap from "gsap";
 
@@ -87,10 +89,10 @@ export default class Sketch {
       a2 = (this.height/this.width) / this.imageAspect;
     }
 
-    this.material.uniforms.resolution.value.x = this.width;
-    this.material.uniforms.resolution.value.y = this.height;
-    this.material.uniforms.resolution.value.z = a1;
-    this.material.uniforms.resolution.value.w = a2;
+    this.mat_big_sphere.uniforms.resolution.value.x = this.width;
+    this.mat_big_sphere.uniforms.resolution.value.y = this.height;
+    this.mat_big_sphere.uniforms.resolution.value.z = a1;
+    this.mat_big_sphere.uniforms.resolution.value.w = a2;
 
 
     this.camera.updateProjectionMatrix();
@@ -98,7 +100,7 @@ export default class Sketch {
 
   addObjects() {
     let that = this;
-    this.material = new THREE.ShaderMaterial({
+    this.mat_big_sphere = new THREE.ShaderMaterial({
       extensions: {
         derivatives: "#extension GL_OES_standard_derivatives : enable"
       },
@@ -110,15 +112,35 @@ export default class Sketch {
       },
       // wireframe: true,
       // transparent: true,
-      vertexShader: vertex,
-      fragmentShader: fragment
+      vertexShader: big_sphere_vs,
+      fragmentShader: big_sphere_fs
+    });
+    
+    
+    this.geo_big_sphere = new THREE.SphereBufferGeometry(1.5, 32, 32);
+    
+    this.msh_big_sphere = new THREE.Mesh(this.geo_big_sphere,this.mat_big_sphere)
+    this.scene.add(this.msh_big_sphere)
+    
+    this.mat_small_sphere = new THREE.ShaderMaterial({
+      extensions: {
+        derivatives: "#extension GL_OES_standard_derivatives : enable"
+      },
+      side: THREE.DoubleSide,
+      uniforms: {
+        time: { value: 0 },
+        progress: { value: 0.6 },
+        resolution: { value: new THREE.Vector4() },
+      },
+      // wireframe: true,
+      // transparent: true,
+      vertexShader: small_sphere_vs,
+      fragmentShader: small_sphere_fs
     });
 
-    
-    this.geometry = new THREE.SphereBufferGeometry(1.5, 32, 32);
-
-    this.mesh = new THREE.Mesh(this.geometry,this.material)
-    this.scene.add(this.mesh)
+    this.geo_small_sphere = new THREE.SphereBufferGeometry(0.4, 32, 32);
+    this.msh_small_sphere = new THREE.Mesh(this.geo_small_sphere,this.mat_small_sphere)
+    this.scene.add(this.msh_small_sphere)
 
   }
 
@@ -136,9 +158,9 @@ export default class Sketch {
   render() {
     if (!this.isPlaying) return;
     this.time += 0.05;
-    this.material.uniforms.time.value = this.time;
-    this.material.uniforms.progress.value = this.settings.progress;
-    // this.mesh.position.y = Math.sin(this.time);
+    this.mat_big_sphere.uniforms.time.value = this.time;
+    this.mat_big_sphere.uniforms.progress.value = this.settings.progress;
+    // this.msh_big_sphere.position.y = Math.sin(this.time);
     requestAnimationFrame(this.render.bind(this));
     this.renderer.render(this.scene, this.camera);
 
