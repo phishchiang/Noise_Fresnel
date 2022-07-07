@@ -7,6 +7,7 @@ uniform vec4 resolution;
 
 varying vec2 vUv;
 varying vec3 v_position;
+varying vec4 v_world_position;
 
 // Noise Function
 // https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
@@ -64,11 +65,11 @@ vec2 rotate_2d_vec(vec2 v, float a) {
 
 
 void main()	{
-	vec3 color_01 = vec3(1.0, 0.0, 0.0);
-	vec3 color_02 = vec3(0.0, 1.0, 0.0);
-	vec3 color_03 = vec3(0.0, 0.0, 1.0);
+	vec3 color_primary = vec3(0.000, 0.188, 0.286);
+	vec3 color_secondary = vec3(0.968, 0.498, 0.000);
+	vec3 color_accent = vec3(0.917, 0.886, 0.717);
 
-	float n = noise(v_position + time * 0.25);
+	float n = noise(v_position.xyz + time * 0.25);
 
   // // Just apply vector
 	// vec2 base_uv = rotate_2d_vec(v_position.xy, n) * 0.1;
@@ -79,8 +80,8 @@ void main()	{
 	float pattern_01 = sin_pattern(base_uv, 0.5);
 	float pattern_02 = sin_pattern(base_uv, 0.1);
 
-	vec3 color_pattern_01 = mix(color_01, color_02, pattern_01);
-	vec3 color_pattern_02 = mix(color_pattern_01, color_03, pattern_02);
+	vec3 color_pattern_01 = mix(color_secondary, color_accent, pattern_01);
+	vec3 color_pattern_02 = mix(color_pattern_01, color_primary, pattern_02);
 
 	gl_FragColor = vec4(color_pattern_02, 1.);
 }
