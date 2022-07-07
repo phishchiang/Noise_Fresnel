@@ -100,6 +100,18 @@ export default class Sketch {
 
   addObjects() {
     let that = this;
+
+    this.cube_render_target = new THREE.WebGLCubeRenderTarget(256,{
+        minFilter: THREE.LinearFilter,
+        magFilter: THREE.LinearFilter,
+        format: THREE.RGBAFormat,
+        generateMipmaps: true,
+        encoding: THREE.sRGBEncoding,
+      }
+    )
+
+    this.cube_camera = new THREE.CubeCamera(0.1, 10, this.cube_render_target);
+
     this.mat_big_sphere = new THREE.ShaderMaterial({
       extensions: {
         derivatives: "#extension GL_OES_standard_derivatives : enable"
@@ -166,6 +178,12 @@ export default class Sketch {
     this.mat_big_sphere.uniforms.time.value = this.time;
     this.mat_big_sphere.uniforms.progress.value = this.settings.progress;
     // this.msh_big_sphere.position.y = Math.sin(this.time);
+
+    this.msh_small_sphere.visible = false;
+    this.cube_camera.update(this.renderer, this.scene);
+    this.msh_small_sphere.visible = true;
+    this.mat_small_sphere.uniforms.u_cube.value = this.cube_render_target.texture;
+
     requestAnimationFrame(this.render.bind(this));
     this.renderer.render(this.scene, this.camera);
 
