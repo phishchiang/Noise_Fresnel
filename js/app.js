@@ -62,12 +62,20 @@ export default class Sketch {
     let that = this;
     this.settings = {
       progress: 0.0,
-      u_debug: new THREE.Vector2(0, 0),
+      u_debug: new THREE.Vector2(0.75, 0),
+      refraction_ratio: 1.02,
+      fresnel_bias: 0.1,
+      fresnel_power: 2.0,
+      fresnel_scale: 1.0,
     };
     this.gui = new dat.GUI();
     this.gui.add(this.settings, "progress", -1, 2, 0.01);
     this.gui.add(this.settings.u_debug, "x", -1, 2, 0.01);
     this.gui.add(this.settings.u_debug, "y", -1, 2, 0.01);
+    this.gui.add(this.settings, "refraction_ratio", -1, 2, 0.01);
+    this.gui.add(this.settings, "fresnel_bias", -1, 2, 0.01);
+    this.gui.add(this.settings, "fresnel_scale", 0, 2, 0.01);
+    this.gui.add(this.settings, "fresnel_power", 0, 2, 0.01);
   }
 
   setupResize() {
@@ -184,6 +192,10 @@ export default class Sketch {
     this.mat_big_sphere.uniforms.time.value = this.time;
     // this.mat_big_sphere.uniforms.progress.value = this.settings.progress;
     // this.msh_test.position.y = this.settings.progress;
+    this.mat_small_sphere.uniforms.u_refraction_ratio.value = this.settings.refraction_ratio;
+    this.mat_small_sphere.uniforms.u_fresnel_bias.value = this.settings.fresnel_bias;
+    this.mat_small_sphere.uniforms.u_fresnel_power.value = this.settings.fresnel_power;
+    this.mat_small_sphere.uniforms.u_fresnel_scale.value = this.settings.fresnel_scale;
     if(this.settings.u_debug){
       this.msh_test.position.x = this.settings.u_debug.x;
       this.msh_test.position.y = this.settings.u_debug.y;
