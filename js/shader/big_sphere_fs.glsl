@@ -69,7 +69,7 @@ void main()	{
 	vec3 color_secondary = vec3(0.968, 0.498, 0.000);
 	vec3 color_accent = vec3(0.917, 0.886, 0.717);
 
-	float n = noise(v_position.xyz + time * 0.25);
+	float n = noise(v_position.xyz * 0.2 + time * 0.25);
 
   // // Just apply vector
 	// vec2 base_uv = rotate_2d_vec(v_position.xy, n) * 0.1;

@@ -37,7 +37,7 @@ export default class Sketch {
       70,
       window.innerWidth / window.innerHeight,
       0.01,
-      5
+      100
     );
 
 
@@ -62,9 +62,12 @@ export default class Sketch {
     let that = this;
     this.settings = {
       progress: 0.0,
+      u_debug: new THREE.Vector2(0, 0),
     };
     this.gui = new dat.GUI();
     this.gui.add(this.settings, "progress", -1, 2, 0.01);
+    this.gui.add(this.settings.u_debug, "x", -1, 2, 0.01);
+    this.gui.add(this.settings.u_debug, "y", -1, 2, 0.01);
   }
 
   setupResize() {
@@ -120,6 +123,7 @@ export default class Sketch {
       uniforms: {
         time: { value: 0 },
         progress: { value: 0.6 },
+        u_debug: { value: new THREE.Vector2(0, 0) },
         resolution: { value: new THREE.Vector4() },
       },
       // wireframe: true,
@@ -129,7 +133,7 @@ export default class Sketch {
     });
     
     
-    this.geo_big_sphere = new THREE.SphereBufferGeometry(1.5, 32, 32);
+    this.geo_big_sphere = new THREE.SphereBufferGeometry(10, 32, 32);
     
     this.msh_big_sphere = new THREE.Mesh(this.geo_big_sphere,this.mat_big_sphere)
     this.scene.add(this.msh_big_sphere)
@@ -159,6 +163,8 @@ export default class Sketch {
     this.msh_small_sphere = new THREE.Mesh(this.geo_small_sphere,this.mat_small_sphere)
     this.scene.add(this.msh_small_sphere)
 
+    this.msh_test = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), new THREE.MeshLambertMaterial({color: 0xff0000}));
+    this.scene.add(this.msh_test);
   }
 
   stop() {
@@ -176,8 +182,13 @@ export default class Sketch {
     if (!this.isPlaying) return;
     this.time += 0.05;
     this.mat_big_sphere.uniforms.time.value = this.time;
-    this.mat_big_sphere.uniforms.progress.value = this.settings.progress;
-    // this.msh_big_sphere.position.y = Math.sin(this.time);
+    // this.mat_big_sphere.uniforms.progress.value = this.settings.progress;
+    // this.msh_test.position.y = this.settings.progress;
+    if(this.settings.u_debug){
+      this.msh_test.position.x = this.settings.u_debug.x;
+      this.msh_test.position.y = this.settings.u_debug.y;
+    }
+    // if(this.settings.u_debug) console.log(this.settings.u_debug.x);
 
     this.msh_small_sphere.visible = false;
     this.cube_camera.update(this.renderer, this.scene);
